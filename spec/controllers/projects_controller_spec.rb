@@ -90,16 +90,49 @@ RSpec.describe ProjectsController, type: :controller do
   end
 
   describe "#update" do
-    context "認可されたユーザーとして" do
-      let(:user) { FactoryBot.create(:user) }
-      let(:project) { FactoryBot.create(:project, owner: user) }
+    let(:user) { FactoryBot.create(:user) }
+    let(:project) { FactoryBot.create(:project, owner: user) }
 
+    context "認可されたユーザーとして" do
       it "プロジェクトを更新できること" do
         project_params = FactoryBot.attributes_for(:project,
           name: "New Project Name")
         sign_in user
         patch :update, params: { id: project.id, project:project_params }
         expect(project.reload.name).to eq "New Project Name"
+      end
+    end
+
+    context "認可されていないユーザーとして" do
+      let(:other_user) { FactoryBot.create(:user) }
+      let(:project) { FactoryBot.create(:project, owner: other_user, name: "Same Old Name") }
+
+      it "プロジェクトを更新できないこと" do
+        project_params = FactoryBot.attributes_for(:project, name: "New Name")
+        sign_in user
+        patch :update, params: { id: project.id, project: project_params }
+        expect(project.reload.name).to eq "Same Old Name"
+      end
+
+      it "ダッシュボードにリダイレクトすること" do
+        project_params = FactoryBot.attributes_for(:project, name: "New Name")
+        sign_in user
+        patch :update, params: { id: project.id, project: project_params }
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context "ゲストとして" do
+      it "302レスポンスを返すこと" do
+        project_params = FactoryBot.attributes_for(:project)
+        patch :update, params: { id: project.id, project: project_params }
+        expect(response).to have_http_status "302"
+      end
+
+      it "サインイン画面にリダイレクトすること" do
+        project_params = FactoryBot.attributes_for(:project)
+        patch :update, params: { id: project.id, project: project_params }
+        expect(response).to redirect_to "/users/sign_in"
       end
     end
   end
