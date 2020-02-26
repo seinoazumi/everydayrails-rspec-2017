@@ -136,4 +136,37 @@ RSpec.describe ProjectsController, type: :controller do
       end
     end
   end
+
+  describe "#destroy" do
+    context "認可されたユーザーとして" do
+      let!(:user) { FactoryBot.create(:user) }
+      let!(:project) { FactoryBot.create(:project, owner: user) }
+
+      it "プロジェクトを削除できること" do
+        sign_in user
+        expect {
+          delete :destroy, params: { id: project.id }
+      }.to change(user.projects, :count).by(-1)
+      end
+    end
+
+    context "認可されていないユーザーとして" do
+      it "プロジェクトを削除できないこと" do
+      end
+
+      it "ダッシュボードにリダイレクトすること" do
+      end
+    end
+
+    context "ゲストとして" do
+      it "プロジェクトを削除できないこと" do
+      end
+
+      it "302レスポンスを返すこと" do
+      end
+
+      it "サインイン画面にリダイレクトすること" do
+      end
+    end
+  end
 end
