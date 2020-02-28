@@ -138,10 +138,11 @@ RSpec.describe ProjectsController, type: :controller do
   end
 
   describe "#destroy" do
+    
+    let!(:user) { FactoryBot.create(:user) }
+    let!(:project) { FactoryBot.create(:project, owner: user) }
+    
     context "認可されたユーザーとして" do
-      let!(:user) { FactoryBot.create(:user) }
-      let!(:project) { FactoryBot.create(:project, owner: user) }
-
       it "プロジェクトを削除できること" do
         sign_in user
         expect {
@@ -151,21 +152,37 @@ RSpec.describe ProjectsController, type: :controller do
     end
 
     context "認可されていないユーザーとして" do
+      let!(:other_user) { FactoryBot.create(:user) }
+
       it "プロジェクトを削除できないこと" do
+        sign_in other_user
+        expect {
+          delete :destroy, params: { id: project.id }
+        }.to_not change(Project, :count)
       end
 
       it "ダッシュボードにリダイレクトすること" do
+        sign_in other_user
+        delete :destroy, params: { id: project.id }
+        expect(response).to redirect_to root_path
       end
     end
 
     context "ゲストとして" do
       it "プロジェクトを削除できないこと" do
+        expect {
+          delete :destroy, params: { id: project.id }
+        }.to_not change(Project, :count)
       end
 
       it "302レスポンスを返すこと" do
+        delete :destroy, params: { id: project.id }
+        expect(response).to have_http_status "302"
       end
 
       it "サインイン画面にリダイレクトすること" do
+        delete :destroy, params: { id: project.id }
+        expect(response).to redirect_to "/users/sign_in"
       end
     end
   end
