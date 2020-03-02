@@ -60,6 +60,51 @@ RSpec.describe ProjectsController, type: :controller do
     end
   end
 
+  describe "#new" do
+    context "登録のあるユーザーとして" do
+      let(:user) { FactoryBot.create(:user) }
+      let(:project) { FactoryBot.create(:project, owner: user) }
+
+      it "正しいレスポンスを返すこと" do
+        sign_in user
+        get :new
+        expect(response).to be_success
+      end
+    end
+
+    context "ゲストとして" do
+      it "サインイン画面にリダイレクトされる" do
+        get :new
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
+  end
+
+  describe "#edit" do
+    context "認可されたユーザーとして" do
+      let(:user) { FactoryBot.create(:user) }
+      let(:project) { FactoryBot.create(:project, owner: user) }
+
+      it "正しいレスポンスを返すこと" do
+        sign_in user
+        get :edit, params: { id: project.id }
+        expect(response).to be_success
+      end
+    end
+
+    context "認可されていないユーザーとして" do
+      let(:user) { FactoryBot.create(:user) }
+      let(:other_user) { FactoryBot.create(:user) }
+      let(:project) { FactoryBot.create(:project, owner: other_user) }
+
+      it "ダッシュボードにリダイレクトすること" do
+        sign_in user
+        get :edit, params: { id: project.id }
+        expect(response).to redirect_to root_path
+      end
+    end
+  end
+
   describe "#create" do
     context "認証済みユーザーとして" do
       let(:user) { FactoryBot.create(:user) }
