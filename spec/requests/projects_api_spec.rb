@@ -1,0 +1,43 @@
+require 'rails_helper'
+
+RSpec.describe "Projects API", type: :request do
+
+  let(:user) { FactoryBot.create(:user) }
+  let!(:project) { FactoryBot.create(:project, name: "Sample Project") }
+  let!(:second_project) { FactoryBot.create(:project, name: "Second Sample Project", owner: user) }
+
+  it "1件のプロジェクトを読み出すこと" do
+    get api_projects_path, params: {
+      user_email: user.email,
+      user_token: user.authentication_token
+    }
+
+    expect(response).to have_http_status(:success)
+    json = JSON.parse(response.body)
+    expect(json.length).to eq 1
+    project_id = json[0]["id"]
+
+    get api_project_path(project_id), params: {
+      user_email: user.email,
+      user_token: user.authentication_token
+    }
+
+    expect(response).to have_http_status(:success)
+    json = JSON.parse(response.body)
+    expect(json["name"]).to eq "Second Sample Project"
+  end
+
+  it "プロジェクトを作成できること" do
+    project_attributes = FactoryBot.attributes_for(:project)
+
+    expect {
+      post api_projects_path, params: {
+        user_email: user.email,
+        user_token: user.authentication_token,
+        project: project_attributes
+      }
+    }.to change(user.projects, :count).by(1)
+
+    expect(response).to have_http_status(:success)
+  end
+end
