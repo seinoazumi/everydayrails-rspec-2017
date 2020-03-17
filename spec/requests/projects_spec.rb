@@ -8,6 +8,7 @@ RSpec.describe "Projects", type: :request do
       it "プロジェクトを追加できること" do
         project_params = FactoryBot.attributes_for(:project)
         sign_in user
+
         expectt {
           post projects_path, params: { project: project_params }
         }.to change(@user.projects, :count).by(1)
@@ -18,6 +19,7 @@ RSpec.describe "Projects", type: :request do
       it "プロジェクトを追加できないこと" do
         project_params = FactoryBot.attributes_for(:project, :invalid)
         sign_in user
+
         expectt {
           post projects_path, params: { project: project_params }
         }.to_not change(@user.projects, :count)
