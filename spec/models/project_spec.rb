@@ -4,40 +4,8 @@ RSpec.describe Project, type: :model do
 
   let(:user) { FactoryBot.create(:user) }
 
-  it "ユーザー単位では重複したプロジェクトを許可しないこと" do
-
-    user.projects.create(
-      name: "test project"
-    )
-
-    new_project = user.projects.build(
-      name: "test project"
-    )
-
-    new_project.valid?
-    expect(new_project.errors[:name]).to include("has already been taken")
-  end
-  
-  it "2人のユーザーが同じ名前を使うのは許可すること" do
-
-    user.projects.create(
-      name: "test project"
-    )
-
-    other_user = User.create(
-      first_name: "Tanaka",
-      last_name: "Hanako",
-      email: "other@example.com",
-      password: "dottle-nouveau-pavilion-tights-furze"
-    )
-
-    other_project = other_user.projects.create(
-      name: "test project"
-    )
-
-    expect(other_project).to be_valid
-
-  end
+  # ユーザーは同じ名前のプロジェクトを複数持つことができないが、ユーザーが異なれば同じ名前のプロジェクトがあっても構わない、というテスト
+  it { is_expected.to validate_uniqueness_of(:name).scoped_to(:user_id) }
 
   it "名前がないとエラーになること" do
 

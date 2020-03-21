@@ -15,28 +15,10 @@ RSpec.describe User, type: :model do
     expect(user).to be_valid
   end
 
-  it "名がなければ無効な状態であること" do
-    user = FactoryBot.build(:user, first_name: nil)
-    user.valid?
-    expect(user.errors[:first_name]).to include("can't be blank")
-  end
-
-  it "姓がなければ無効な状態であること" do
-    user = FactoryBot.build(:user, last_name: nil)
-    user.valid?
-    expect(user.errors[:last_name]).to include("can't be blank")
-  end
-
-  it "メールアドレスがなければ無効な状態であること" do
-    user = FactoryBot.build(:user, email: nil)
-    user.valid?
-    expect(user.errors[:email]).to include("can't be blank")
-  end
-
-  it "ユーザーのフルネームを文字列として返すこと" do
-    user = FactoryBot.build(:user, first_name: "Taro", last_name: "Yamada")
-    expect(user.name).to eq "Taro Yamada"
-  end
+  it { is_expected.to validate_presence_of :first_name }
+  it { is_expected.to validate_presence_of :last_name }
+  it { is_expected.to validate_presence_of :email }
+  it { is_expected.to validate_uniqueness_of(:email).case_insensitive }
 
   it "重複したメールアドレスなら無効な状態であること" do
     FactoryBot.create(:user, email: "aaron@example.com")
