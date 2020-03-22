@@ -5,6 +5,8 @@ RSpec.describe Note, type: :model do
   let(:user) { FactoryBot.create(:user) }
   let(:project) { FactoryBot.create(:project, owner: user) }
 
+  it { is_expected.to have_attached_file(:attachment) }
+
   # このexampleは本の後半で出てこなくなったのでコメントアウト
   # it "ファクトリで関連するデータを生成する" do
   #   note = FactoryBot.create(:note)

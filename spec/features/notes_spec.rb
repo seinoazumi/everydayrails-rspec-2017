@@ -22,4 +22,17 @@ RSpec.feature "notes", type: :feature do
       expect(page).to have_content "Test Note"
     }.to change(project.notes, :count).by(1)
   end
+
+  scenario "ユーザーはファイルをアップロードできる" do
+    sign_in user
+    visit project_path(project)
+    click_link "Add Note"
+    fill_in "Message", with: "My Book cover"
+    attach_file "Attachment", "#{Rails.root}/spec/files/attachment.jpg"
+    click_button "Create Note"
+
+    expect(page).to have_content "Note was successfully created"
+    expect(page).to have_content "My Book cover"
+    expect(page).to have_content "attachment.jpg (image/jpeg"
+  end
 end
