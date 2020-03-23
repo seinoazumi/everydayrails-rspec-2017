@@ -26,6 +26,11 @@ RSpec.describe User, type: :model do
     
     user.valid?
     expect(user.errors[:email]).to include("has already been taken")
+  end
 
+  it "アカウントが作成された時にウェルカムメールを送信すること" do
+    allow(UserMailer).to receive_message_chain(:welcome_email, :deliver_later)
+    user = FactoryBot.create(:user)
+    expect(UserMailer).to have_received(:welcome_email).with(user)
   end
 end
