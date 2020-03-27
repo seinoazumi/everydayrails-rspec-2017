@@ -7,7 +7,7 @@ RSpec.feature "Tasks", type: :feature do
     owner: user) }
   let!(:task) { project.tasks.create!(name: "Finish RSpec tutorial") }
 
-  scenario "ユーザーがタスクの状態を切り替える", js: true do
+  scenario "ユーザーがタスクの状態を切り替える", js: true, vcr: true do
     sign_in user
     go_to_project "RSpec tutorial"
 

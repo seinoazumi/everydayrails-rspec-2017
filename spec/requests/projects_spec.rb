@@ -9,9 +9,9 @@ RSpec.describe "Projects", type: :request do
         project_params = FactoryBot.attributes_for(:project)
         sign_in user
 
-        expectt {
+        expect {
           post projects_path, params: { project: project_params }
-        }.to change(@user.projects, :count).by(1)
+        }.to change(user.projects, :count).by(1)
       end
     end
 
@@ -20,9 +20,9 @@ RSpec.describe "Projects", type: :request do
         project_params = FactoryBot.attributes_for(:project, :invalid)
         sign_in user
 
-        expectt {
+        expect {
           post projects_path, params: { project: project_params }
-        }.to_not change(@user.projects, :count)
+        }.to_not change(user.projects, :count)
       end
     end
   end
