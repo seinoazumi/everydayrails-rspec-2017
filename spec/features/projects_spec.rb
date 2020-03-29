@@ -35,6 +35,26 @@ RSpec.feature "Projects", type: :feature do
     expect(page).to_not have_button "Complete"
   end
 
+  scenario "完了ずみのプロジェクトはプロジェクト一覧に表示されない" do
+    project_doing = FactoryBot.create(:project, name: "Project Doing", owner: user)
+    project_done = FactoryBot.create(:project, name: "Completed Project", owner: user, completed: true)
+    sign_in user
+
+    visit root_path
+    expect(page).to_not have_content "Completed Project"
+  end
+
+  scenario "「完了済みのプロジェクト」ボタンをクリックすると、完了済みのプロジェクトが見える" do
+    project_doing = FactoryBot.create(:project, name: "Project Doing", owner: user)
+    project_done = FactoryBot.create(:project, name: "Completed Project", owner: user, completed: true)
+    sign_in user
+
+    visit root_path
+    click_button "See Projects Completed"
+
+    expect(page).to have_content "Completed Project"
+  end
+
   def go_to_project(name)
     visit root_path
     click_link name

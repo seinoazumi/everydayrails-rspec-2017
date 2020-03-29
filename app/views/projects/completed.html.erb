@@ -1,5 +1,5 @@
 <h1>
-  Projects
+  Completed Projects
 
   <%= link_to new_project_path, class: "btn btn-primary" do %>
     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -7,7 +7,8 @@
   <% end %>
 </h1>
 
-<%= button_to "See Projects Completed", { controller: 'projects', action: 'completed' }, { method: :get } %>
+<%= button_to "See Projects not Completed", { controller: 'projects', action: 'index' }, { method: :get } %>
+
 
 <% @projects.each do |project| %>
   <h2><%= link_to project.name, project %></h2>

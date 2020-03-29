@@ -1,11 +1,11 @@
 class ProjectsController < ApplicationController
   before_action :set_project, only: [:show, :edit, :update, :destroy, :complete]
-  before_action :project_owner?, except: [:index, :new, :create]
+  before_action :project_owner?, except: [:index, :new, :create, :completed]
 
   # GET /projects
   # GET /projects.json
   def index
-    @projects = current_user.projects
+    @projects = current_user.projects.where(completed: false)
   end
 
   # GET /projects/1
@@ -63,8 +63,15 @@ class ProjectsController < ApplicationController
   end
 
   def complete
-    @project.update_attributes!(completed: true)
-    redirect_to @project, notice: "Congratulations, this project is complete!"
+    if @project.update_attributes(completed: true)
+      redirect_to @project, notice: "Congratulations, this project is complete!"
+    else
+      redirect_to @project, alert: "Unable to complete project."
+    end
+  end
+
+  def completed
+    @projects = current_user.projects.where(completed: true)
   end
 
   private

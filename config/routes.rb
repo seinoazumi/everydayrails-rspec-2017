@@ -13,6 +13,8 @@ Rails.application.routes.draw do
         post :toggle
       end
     end
+
+    get :completed, on: :collection
     member do
       patch :complete
     end
